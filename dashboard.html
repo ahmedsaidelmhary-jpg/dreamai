@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Inter,sans-serif;background:#f5f5f7;transition:0.3s}
+        body.dark{background:#0a0a0a;color:white}
+        .header{background:white;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
+        body.dark .header{background:#1a1a2e}
+        .logo{font-size:24px;font-weight:800;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;background-clip:text;color:transparent;cursor:pointer}
+        .points{background:linear-gradient(135deg,#fbbf24,#f59e0b);padding:10px 24px;border-radius:60px;font-weight:700;color:white}
+        .theme-btn,.logout-btn{padding:10px 20px;border-radius:60px;border:1px solid #ddd;background:transparent;cursor:pointer}
+        .logout-btn{background:#ef4444;color:white;border:none}
+        .container{max-width:1200px;margin:40px auto;padding:0 24px}
+        .welcome{background:linear-gradient(135deg,#667eea,#764ba2);padding:48px;border-radius:32px;color:white;margin-bottom:40px}
+        .points-card{background:white;padding:40px;border-radius:32px;text-align:center;margin-bottom:40px}
+        body.dark .points-card{background:#1a1a2e}
+        .points-number{font-size:80px;font-weight:800;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;background-clip:text;color:transparent}
+        .actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+        .action{background:white;padding:48px 32px;border-radius:28px;text-align:center;cursor:pointer;transition:0.3s}
+        body.dark .action{background:#1a1a2e}
+        .action:hover{transform:translateY(-8px)}
+        .action-icon{font-size:64px}
+        .price{display:inline-block;padding:6px 16px;border-radius:60px;background:#10b981;color:white}
+    </style>
+</head>
+<body id="body">
+<div class="header"><div class="logo" onclick="location.href='/dashboard'">✨ DreamAI</div><div style="display:flex;gap:12px"><div class="points" id="pointsBadge">⭐ 0</div><button class="theme-btn" onclick="toggleTheme()">🌙</button><button class="logout-btn" onclick="logout()">Logout</button></div></div>
+<div class="container"><div class="welcome"><h1>Welcome, <span id="userName">Artist</span>!</h1></div><div class="points-card"><div class="points-number" id="pointsNumber">0</div><button class="theme-btn" onclick="claimDaily()" style="margin-top:20px;background:#10b981;color:white;border:none;padding:10px 28px">🎁 Claim Daily (+5)</button></div><div class="actions"><div class="action" onclick="goTo('create')"><div class="action-icon">🎨</div><h3>Generate</h3><span class="price">⚡ 1 point</span></div><div class="action" onclick="goTo('gallery')"><div class="action-icon">🖼️</div><h3>Gallery</h3></div><div class="action" onclick="goTo('badges')"><div class="action-icon">🏆</div><h3>Badges</h3></div></div></div>
+<script>
+let points=0
+async function load(){let r=await fetch('/api/me'),d=await r.json();if(!d.user){location.href='/';return}document.getElementById('userName').innerText=d.user.name||d.user.email.split('@')[0];await loadPoints();let dr=await fetch('/api/me'),dd=await dr.json();if(dd.user&&dd.user.dark_mode==1)document.getElementById('body').classList.add('dark')}
+async function loadPoints(){let r=await fetch('/api/points'),d=await r.json();points=d.points;document.getElementById('pointsNumber').innerText=points;document.getElementById('pointsBadge').innerHTML=`⭐ ${points}`}
+async function claimDaily(){let r=await fetch('/api/claim',{method:'POST'}),d=await r.json();if(d.success){points=d.points;document.getElementById('pointsNumber').innerText=points;document.getElementById('pointsBadge').innerHTML=`⭐ ${points}`;alert('+5 points!')}else alert('Already claimed today')}
+async function logout(){await fetch('/api/logout',{method:'POST'});location.href='/'}
+function goTo(page){if(page==='create'&&points<1){alert('Not enough points');return}location.href=`/${page}`}
+function toggleTheme(){let b=document.getElementById('body');let isDark=b.classList.contains('dark');if(isDark){b.classList.remove('dark');fetch('/api/darkmode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dark:false})})}else{b.classList.add('dark');fetch('/api/darkmode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dark:true})})}}
+load()
+</script>
+</body>
+</html>
