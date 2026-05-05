@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DreamAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh}
+        .navbar{background:rgba(255,255,255,0.95);padding:16px 32px;display:flex;justify-content:space-between;align-items:center}
+        .logo{font-size:24px;font-weight:800;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;background-clip:text;color:transparent}
+        .btn-nav{padding:10px 24px;border-radius:50px;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:white;cursor:pointer}
+        .hero{text-align:center;padding:100px 20px;color:white}
+        .hero h1{font-size:64px;margin-bottom:20px}
+        .hero p{font-size:20px;margin-bottom:40px}
+        .btn-large{padding:16px 48px;font-size:18px;border-radius:60px;border:none;background:white;color:#667eea;font-weight:700;cursor:pointer}
+        .features{display:flex;justify-content:center;gap:40px;padding:60px 20px;background:white;flex-wrap:wrap}
+        .feature-card{text-align:center;max-width:250px}
+        .feature-icon{font-size:48px;margin-bottom:20px}
+        .modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);justify-content:center;align-items:center}
+        .modal-content{background:white;padding:40px;border-radius:32px;text-align:center}
+        .login-btn{width:100%;padding:14px;margin:10px 0;border-radius:50px;border:1px solid #ddd;background:white;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px}
+        .whatsapp-btn{background:#25D366;color:white;border:none}
+    </style>
+</head>
+<body>
+<div class="navbar"><div class="logo">✨ DreamAI</div><button class="btn-nav" onclick="showModal()">Sign In</button></div>
+<div class="hero"><h1>Turn Words Into Art</h1><p>AI-powered image generation</p><button class="btn-large" onclick="showModal()">Start Creating</button></div>
+<div class="features"><div class="feature-card"><div class="feature-icon">🎨</div><h3>AI Powered</h3></div><div class="feature-card"><div class="feature-icon">⭐</div><h3>5 Free Daily</h3></div><div class="feature-card"><div class="feature-icon">🏆</div><h3>Your Gallery</h3></div></div>
+<div id="modal" class="modal"><div class="modal-content"><h2>Welcome</h2><button class="login-btn" onclick="login('google')">🔵 Google</button><button class="login-btn" onclick="login('github')">🐙 GitHub</button><button class="login-btn whatsapp-btn" onclick="login('whatsapp')">💚 WhatsApp</button><div onclick="closeModal()" style="margin-top:20px;cursor:pointer">Close</div></div></div>
+<script>
+function showModal(){document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').style.display='none'}
+async function login(provider){
+    let email,name
+    if(provider==='whatsapp'){
+        window.open('https://wa.me/201204799572','_blank')
+        email=`wa${Date.now()}@user.com`
+        name='WhatsApp User'
+    }else{
+        email=`${provider}${Date.now()}@user.com`
+        name=provider.charAt(0).toUpperCase()+provider.slice(1)+' User'
+    }
+    let res=await fetch(`/api/login/${provider}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,name})})
+    let data=await res.json()
+    if(data.success)location.href='/dashboard'
+}
+</script>
+</body>
+</html>
